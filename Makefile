@@ -61,7 +61,7 @@ TOUCH        = touch
 # - Platform identifier ------------------------------------------------
 # ----------------------------------------------------------------------
 #
-ARCH         = Linux_Intel64
+ARCH         = $(arch)
 #
 # ----------------------------------------------------------------------
 # - HPL Directory Structure / HPL library ------------------------------
@@ -82,8 +82,8 @@ HPLlib       = $(LIBdir)/libhpl.a
 # used. The variable MPdir is only used for defining MPinc and MPlib.
 #
 # MPdir        = /opt/intel/mpi/4.1.0
-MPinc        = -I/usr/include/openmpi
-MPlib        = -L/usr/lib/openmpi -lmpi
+# MPinc        = -I$(MPdir)/include64
+# MPlib        = $(MPdir)/lib64/libmpi.a
 #
 # ----------------------------------------------------------------------
 # - Linear Algebra library (BLAS or VSIPL) -----------------------------
@@ -92,12 +92,12 @@ MPlib        = -L/usr/lib/openmpi -lmpi
 # header files,  LAlib  is defined  to be the name of  the library to be
 # used. The variable LAdir is only used for defining LAinc and LAlib.
 #
-LAdir = /usr/lib
+LAdir        = $(MKLROOT)
 ifndef  LAinc
-LAinc = 
+LAinc        = $(LAdir)/mkl/include
 endif
 ifndef  LAlib
-LAlib = -lopenblas -llapack
+LAlib        = -lopenblas -llapack
 endif
 #
 # ----------------------------------------------------------------------
@@ -170,16 +170,16 @@ HPL_DEFS     = $(F2CDEFS) $(HPL_OPTS) $(HPL_INCLUDES)
 # - Compilers / linkers - Optimization flags ---------------------------
 # ----------------------------------------------------------------------
 #
-CC = mpicc
-CCNOOPT = mpicc
+CC       = mpicc
+CCNOOPT  = $(HPL_DEFS)
 OMP_DEFS = -openmp
-CC = mpicc
+CCFLAGS  = $(HPL_DEFS) -O3 -w -z noexecstack -z relro -z now -Wall
 #
 # On some platforms,  it is necessary  to use the Fortran linker to find
 # the Fortran internals used in the BLAS library.
 #
 LINKER       = $(CC)
-LINKFLAGS    = $(CCFLAGS) $(OMP_DEFS) -mt_mpi
+LINKFLAGS    = $(CCFLAGS) $(OMP_DEFS) 
 #
 ARCHIVER     = ar
 ARFLAGS      = r
